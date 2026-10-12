@@ -6,11 +6,11 @@ import types
 import pytest
 from pyrogram import enums
 
-from bot.api import DailyLimitReached, NotFound
-from bot.context import Ctx, classify
-from bot.errors import AssistantError
-from bot.handlers import register_all
-from bot.player import Player
+from SHUBHMUSIC.platforms.Youtube import DailyLimitReached, NotFound
+from SHUBHMUSIC.core.context import Ctx, classify
+from SHUBHMUSIC.utils.exceptions import AssistantError
+from SHUBHMUSIC.plugins import register_all
+from SHUBHMUSIC.core.player import Player
 
 from .conftest import FakeAPI, FakeBackend, FakeNotifier, make_config, tr
 
@@ -108,7 +108,7 @@ class HandlerAPI(FakeAPI):
         return [tr(i) for i in range(1, 4)]
 
     async def usage(self):
-        from bot.api import Usage
+        from SHUBHMUSIC.platforms.Youtube import Usage
         return Usage(plan="p3000", daily_limit=3000, used_today=300, remaining_today=2700)
 
 

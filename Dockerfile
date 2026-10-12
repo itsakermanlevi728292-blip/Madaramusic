@@ -12,11 +12,13 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY bot ./bot
+COPY config.py session.py start ./
+COPY strings ./strings
+COPY SHUBHMUSIC ./SHUBHMUSIC
 
 # The bot keeps its small database and Telegram session in DATA_DIR.
 # On Railway attach a volume at /app/data so it survives redeploys.
 ENV DATA_DIR=/app/data
 RUN mkdir -p /app/data
 
-CMD ["python", "-m", "bot"]
+CMD ["bash", "start"]

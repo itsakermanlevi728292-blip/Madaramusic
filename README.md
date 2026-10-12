@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/Python-3.12-blue.svg)
 ![Telegram](https://img.shields.io/badge/Telegram-Voice%20Chats-26A5E4.svg)
-![Tests](https://img.shields.io/badge/tests-63%20passing-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-72%20passing-brightgreen.svg)
 ![PRs welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg)
 
 <img src="docs/now-playing.jpg" alt="Now-playing card" width="560">
@@ -20,7 +20,8 @@
 
 - **One simple dependency for music:** your own [YouTube API server](https://github.com/dev-shubh-madara/Yt-paid-api-bot). No YouTube API key, no scraping code inside the bot, no third-party music API.
 - **Real queue system:** play, queue, force-play, loop (song or queue), shuffle, move, remove, seek, volume.
-- **Buttons on everything:** pause, skip, stop, loop, shuffle, volume, ±15s seek, save to playlist.
+- **Coloured buttons (Telegram's newer button styles):** green = go / on, blue = navigate, red = stop / off. Pause, skip, stop, loop, shuffle, volume, ±15s seek, save to playlist, and a one-tap **📋 Link** button that copies the song link.
+- **Modern message style:** expandable quotes for the queue and help, clean cards, no premium-emoji requirement, so it looks right for every user.
 - **Personal playlists:** `/like` a song and replay your whole list in any group.
 - **Search picker:** `/search` shows the top results as buttons, and only the person who searched can pick.
 - **MP3 downloads:** `/song name` sends a real MP3 file.
@@ -61,7 +62,7 @@ Use a second Telegram account (not your personal one). Then run:
 git clone https://github.com/dev-shubh-madara/Shubh_music_public_bot-.git
 cd Shubh_music_public_bot-
 pip install -r requirements.txt
-python -m bot.session
+python session.py
 ```
 
 Enter your `API_ID`, `API_HASH`, the assistant's phone number and the login code. Copy the long string it prints; that is your `STRING_SESSION`. **Treat it like a password.**
@@ -69,14 +70,14 @@ Enter your `API_ID`, `API_HASH`, the assistant's phone number and the login code
 ### 3. Configure
 
 ```bash
-cp .env.example .env
+cp sample.env .env
 # fill in the values
 ```
 
 ### 4. Run
 
 ```bash
-python -m bot
+bash start        # same as: python3 -m SHUBHMUSIC
 ```
 
 Needs Python 3.12+ and `ffmpeg` installed (`sudo apt install ffmpeg`). On start-up the bot checks your API key and tells you clearly if something is wrong.
@@ -92,7 +93,7 @@ Needs Python 3.12+ and `ffmpeg` installed (`sudo apt install ffmpeg`). On start-
 ### Railway (recommended)
 
 1. Create a new project from this GitHub repo. Railway builds the included `Dockerfile`.
-2. Add the variables from `.env.example` in the **Variables** tab.
+2. Add the variables from `sample.env` in the **Variables** tab.
 3. Add a **Volume** mounted at `/app/data` so the database survives redeploys.
 4. Deploy. Logs should show `Shubh Music is online as @yourbot`.
 
@@ -106,7 +107,7 @@ docker run -d --name shubh-music --restart unless-stopped \
 
 ### VPS (systemd)
 
-Install Python 3.12 and ffmpeg, clone the repo, create a virtualenv, `pip install -r requirements.txt`, fill `.env`, and run `python -m bot` under systemd or `tmux`.
+Install Python 3.12 and ffmpeg, clone the repo, create a virtualenv, `pip install -r requirements.txt`, fill `.env`, and run `bash start` under systemd or `tmux`.
 
 > ⚠️ Vercel and other serverless hosts **cannot** run this bot. It needs a process that stays alive 24/7.
 
@@ -190,19 +191,39 @@ Required: `API_ID`, `API_HASH`, `BOT_TOKEN`, `STRING_SESSION`, `API_URL`, `API_K
 ## 🗂 Project layout
 
 ```
-bot/
-  __main__.py      start-up and shutdown
-  config.py        settings from environment
-  api.py           client for your API
-  player.py        queue + playback logic (no Telegram code, fully testable)
-  queue.py         per-group queue, loop, shuffle, seek clock
-  backend.py       py-tgcalls voice-chat driver
-  assistant.py     gets the assistant account into the group
-  store.py         SQLite: settings, playlists, bans, usage
-  handlers/        commands and buttons
-  ui/              texts, keyboards, now-playing card
-tests/             63 automated tests
+config.py                 all settings (read from environment variables)
+sample.env                copy to .env and fill in
+start / Procfile          start commands (bash start)
+session.py                helper that creates STRING_SESSION
+strings/                  help, welcome and other longer texts
+SHUBHMUSIC/
+  __main__.py             start-up and shutdown
+  platforms/Youtube.py    client for your own YouTube API (search, track, playlist, stream)
+  core/
+    bot.py                the bot account
+    userbot.py            assistant accounts + joining the group
+    call.py               py-tgcalls voice-chat driver
+    player.py             queue + playback logic (no Telegram code, fully testable)
+    context.py            shared helpers, permissions, flood control
+    notifier.py           now-playing card and status messages
+  plugins/                every file here is loaded automatically
+    play/                 /play /vplay /playforce
+    admins/               pause, skip, stop, seek, loop, volume, auth, player buttons
+    bot/                  start, help, settings, search
+    tools/                queue, playlist, song (MP3), ping
+    sudo/                 stats, usage, broadcast, ban, sudo
+    misc/                 added to / removed from a group
+  utils/
+    database.py           SQLite: settings, playlists, bans, usage
+    thumbnails.py         the now-playing card picture
+    formatters.py         text helpers
+    inline/               coloured keyboards, one file per screen
+    decorators/           permission guards
+    stream/queue.py       per-group queue, loop, shuffle, seek clock
+tests/                    72 automated tests
 ```
+
+**Looking for something?** The YouTube/API code is `SHUBHMUSIC/platforms/Youtube.py`, and the settings are in `config.py`.
 
 ## 🧪 Development
 

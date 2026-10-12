@@ -2,9 +2,9 @@ import asyncio
 
 import pytest
 
-from bot.api import APIError, InvalidAPIKey, NotFound
-from bot.errors import NoVoiceChat, PlaybackError
-from bot.player import ChatLimitReached, QueueFull
+from SHUBHMUSIC.platforms.Youtube import APIError, InvalidAPIKey, NotFound
+from SHUBHMUSIC.utils.exceptions import NoVoiceChat, PlaybackError
+from SHUBHMUSIC.core.player import ChatLimitReached, QueueFull
 from .conftest import make_config, tr
 
 C = -1001
@@ -147,7 +147,7 @@ async def test_library_errors_become_friendly_messages(rig):
 
 
 async def test_queue_cap_and_truncation(store):
-    from bot.player import Player
+    from SHUBHMUSIC.core.player import Player
     from .conftest import FakeAPI, FakeBackend, FakeNotifier
 
     cfg = make_config(MAX_QUEUE=3)
@@ -159,7 +159,7 @@ async def test_queue_cap_and_truncation(store):
 
 
 async def test_duration_limit(store):
-    from bot.player import Player
+    from SHUBHMUSIC.core.player import Player
     from .conftest import FakeAPI, FakeBackend, FakeNotifier
 
     cfg = make_config(DURATION_LIMIT_MIN=5)
@@ -178,7 +178,7 @@ async def test_force_play_jumps_the_queue(rig):
 
 
 async def test_per_chat_daily_cap(store):
-    from bot.player import Player
+    from SHUBHMUSIC.core.player import Player
     from .conftest import FakeAPI, FakeBackend, FakeNotifier
 
     p = Player(make_config(PLAYS_PER_CHAT_PER_DAY=2), FakeAPI(), FakeBackend(), store, FakeNotifier())

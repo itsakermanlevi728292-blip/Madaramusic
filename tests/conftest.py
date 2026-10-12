@@ -6,9 +6,9 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from bot.api import MusicAPI, Track  # noqa: E402
-from bot.config import Config  # noqa: E402
-from bot.store import Store  # noqa: E402
+from SHUBHMUSIC.platforms.Youtube import YouTubeAPI, Track  # noqa: E402
+from config import Config  # noqa: E402
+from SHUBHMUSIC.utils.database import Store  # noqa: E402
 
 
 def make_config(**over) -> Config:
@@ -27,7 +27,7 @@ def tr(i=1, **kw) -> Track:
 
 
 class FakeAPI:
-    """Stands in for MusicAPI inside player tests."""
+    """Stands in for YouTubeAPI inside player tests."""
 
     def __init__(self):
         self.plays: list[tuple[str, bool]] = []
@@ -35,7 +35,7 @@ class FakeAPI:
         self.limit_after: int | None = None
 
     async def play(self, video_id, *, video=False):
-        from bot.api import DailyLimitReached, Stream
+        from SHUBHMUSIC.platforms.Youtube import DailyLimitReached, Stream
 
         if video_id in self.fail:
             raise self.fail[video_id]
@@ -105,7 +105,7 @@ async def store():
 
 @pytest.fixture
 async def rig(store):
-    from bot.player import Player
+    from SHUBHMUSIC.core.player import Player
 
     cfg = make_config()
     api, backend, notifier = FakeAPI(), FakeBackend(), FakeNotifier()

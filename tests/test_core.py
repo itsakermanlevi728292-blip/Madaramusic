@@ -1,9 +1,9 @@
 import httpx
 import pytest
 
-from bot.api import DailyLimitReached, InvalidAPIKey, MusicAPI, NotFound, Unavailable
-from bot.config import Config, ConfigError
-from bot.queue import ChatQueue, LOOP_QUEUE, LOOP_TRACK
+from SHUBHMUSIC.platforms.Youtube import DailyLimitReached, InvalidAPIKey, YouTubeAPI, NotFound, Unavailable
+from config import Config, ConfigError
+from SHUBHMUSIC.utils.stream.queue import ChatQueue, LOOP_QUEUE, LOOP_TRACK
 from .conftest import make_config, tr
 
 
@@ -84,8 +84,8 @@ def test_queue_clock_pause_seek():
 
 
 # ── API client ────────────────────────────────────────────────────────────
-def api_with(handler) -> MusicAPI:
-    return MusicAPI("https://api.test", "myk_test", client=httpx.AsyncClient(transport=httpx.MockTransport(handler)))
+def api_with(handler) -> YouTubeAPI:
+    return YouTubeAPI("https://api.test", "myk_test", client=httpx.AsyncClient(transport=httpx.MockTransport(handler)))
 
 
 async def test_api_search_track_and_play_shapes():
@@ -192,7 +192,7 @@ async def test_store_playlists(store):
 
 
 async def test_store_playlist_limit(store):
-    from bot.store import PLAYLIST_MAX
+    from SHUBHMUSIC.utils.database import PLAYLIST_MAX
 
     for i in range(PLAYLIST_MAX):
         assert await store.playlist_add(1, tr(i, id=f"id{i:09d}")) == "added"
