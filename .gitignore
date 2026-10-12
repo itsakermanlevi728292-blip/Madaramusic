@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+data/
+*.session
+*.session-journal
+*.db
+*.db-wal
+*.db-shm
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+cookies.txt
+*.log
